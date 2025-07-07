@@ -7,3 +7,53 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id          String   @id @default(uuid()) @db.Uuid
+  full_name   String   @db.VarChar(255)
+  email       String   @db.VarChar(255)
+  profile_url String   @db.Text
+  password    String   @db.VarChar(255)
+  status      Int      @default(0) // 0 = pending, 1 = verified, 2 = blocked
+
+  notification_enabled Int @default(0) 
+
+  created_at           Int   @default(0)
+  updated_at           Int   @default(0)
+  deleted_at           Int   @default(0)
+
+  otps        Otp[]
+  tokens      Token[]
+}
+
+model Otp {
+  id         String   @id @default(uuid()) @db.Uuid
+  user_id    String   @db.Uuid
+  otp        String
+  type       Int      // 0 = login, 1 = email_verification, 2 = password_reset
+  expires_at DateTime
+  verified   Boolean  @default(false)
+
+  created_at           Int   @default(0)
+  updated_at           Int   @default(0)
+  deleted_at           Int   @default(0)
+
+  user       User     @relation(fields: [user_id], references: [id])
+}
+
+model Token {
+  id             String   @id @default(uuid()) @db.Uuid
+  user_id        String   @db.Uuid
+  access_token   String?  @db.Text
+  provider       Int      @default(0) // 0 = password, 1 = google, 2 = apple
+  google_id      String?  @db.Text
+  apple_id       String?  @db.Text
+  firebase_token String?  @db.Text
+  expires_at     DateTime?
+  
+  created_at           Int   @default(0)
+  updated_at           Int   @default(0)
+  deleted_at           Int   @default(0)
+
+  user           User     @relation(fields: [user_id], references: [id])
+}

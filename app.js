@@ -14,7 +14,7 @@ app.use(express.json());
 connectDB();
 
 app.get("/", (req, res) => {
-   res.json({ status: "Server is live", project: "ENDO1000" });
+     res.json({ status: "Server is live", project: "ENDO1000" });
 });
 
 export default app;
