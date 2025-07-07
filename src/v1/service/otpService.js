@@ -35,7 +35,7 @@ export const OtpService = {
           return createdOtp;
      },
 
-     async verifyOtp({ userId, otp, type }) {   
+     async verifyOtp({ userId, otp, type }) {
           const foundOtp = await prisma.otp.findFirst({
                where: {
                     user_id: userId,
