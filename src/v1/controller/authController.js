@@ -8,5 +8,11 @@ export const AuthController = {
           return ResponseHandler.success(res, {
                message: MESSAGE.EMAIL_OTP_SENT
           });
+     },
+     async verifyOtp(req, res) {
+          const result = await AuthService.verifyOtp(req.body);
+          return ResponseHandler.success(res, {
+               message: MESSAGE.OTP_VERIFIED
+          });
      }
 };

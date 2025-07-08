@@ -11,6 +11,8 @@ export const MESSAGE = {
           `A ${record} with the same details already exists.`,
      SIGNUP_SUCCESS: "Signup successful",
      EMAIL_OTP_SENT: "Email OTP sent successfully!",
+     OTP_VERIFIED: "OTP verified successfully!",
+     INVALID_OTP: "Invalid or expired OTP",
      EMAIL_SENT_SUCCESS: "Email sent successfully!"
 };
 

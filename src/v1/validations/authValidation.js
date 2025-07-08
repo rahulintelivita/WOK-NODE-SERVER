@@ -6,3 +6,8 @@ export const signupSchema = Joi.object({
      password: Joi.string().min(6).max(255).required(),
      profile_url: Joi.string().uri().required()
 });
+
+export const verifyOtpSchema = Joi.object({
+    email: Joi.string().email().required(),
+    otp: Joi.string().required()
+});
