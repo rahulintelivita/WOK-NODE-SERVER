@@ -24,6 +24,8 @@ model User {
 
   otps        Otp[]
   tokens      Token[]
+
+  @@map("users")
 }
 
 model Otp {
@@ -39,6 +41,8 @@ model Otp {
   deleted_at           Int   @default(0)
 
   user       User     @relation(fields: [user_id], references: [id])
+
+  @@map("otps")
 }
 
 model Token {
@@ -56,4 +60,6 @@ model Token {
   deleted_at           Int   @default(0)
 
   user           User     @relation(fields: [user_id], references: [id])
+
+  @@map("tokens")
 }

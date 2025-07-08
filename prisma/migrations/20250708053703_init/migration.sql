@@ -1,5 +1,5 @@
 -- CreateTable
-CREATE TABLE "User" (
+CREATE TABLE "users" (
     "id" UUID NOT NULL,
     "full_name" VARCHAR(255) NOT NULL,
     "email" VARCHAR(255) NOT NULL,
@@ -11,11 +11,11 @@ CREATE TABLE "User" (
     "updated_at" INTEGER NOT NULL DEFAULT 0,
     "deleted_at" INTEGER NOT NULL DEFAULT 0,
 
-    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "Otp" (
+CREATE TABLE "otps" (
     "id" UUID NOT NULL,
     "user_id" UUID NOT NULL,
     "otp" TEXT NOT NULL,
@@ -26,11 +26,11 @@ CREATE TABLE "Otp" (
     "updated_at" INTEGER NOT NULL DEFAULT 0,
     "deleted_at" INTEGER NOT NULL DEFAULT 0,
 
-    CONSTRAINT "Otp_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "otps_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "Token" (
+CREATE TABLE "tokens" (
     "id" UUID NOT NULL,
     "user_id" UUID NOT NULL,
     "access_token" TEXT,
@@ -43,11 +43,14 @@ CREATE TABLE "Token" (
     "updated_at" INTEGER NOT NULL DEFAULT 0,
     "deleted_at" INTEGER NOT NULL DEFAULT 0,
 
-    CONSTRAINT "Token_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "tokens_pkey" PRIMARY KEY ("id")
 );
 
--- AddForeignKey
-ALTER TABLE "Otp" ADD CONSTRAINT "Otp_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+-- CreateIndex
+CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
 -- AddForeignKey
-ALTER TABLE "Token" ADD CONSTRAINT "Token_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "otps" ADD CONSTRAINT "otps_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "tokens" ADD CONSTRAINT "tokens_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
