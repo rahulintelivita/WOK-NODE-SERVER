@@ -20,8 +20,8 @@ export const MESSAGE = {
      FORGOT_PASSWORD_SUCCESS: "If this email exists, an OTP has been sent",
      UNAUTHORIZED: "Unauthorized",
      INVALID_TOKEN: "Invalid token or expired",
-     PROFILE_FETCHED: "Profile fetched successfully"
-
+     PROFILE_FETCHED: "Profile fetched successfully",
+     PROFILE_UPDATED: "Profile updated successfully!"
 };
 
 export const ERROR = {

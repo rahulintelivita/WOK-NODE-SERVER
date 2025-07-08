@@ -85,7 +85,11 @@ export async function sendOtpEmail({ to, name, otp, otp_expiry }) {
 export async function sendPasswordResetOtpEmail({ to, name, otp, otp_expiry }) {
      const __filename = fileURLToPath(import.meta.url);
      const __dirname = path.dirname(__filename);
-     const templatePath = path.join(__dirname, "templates", "password-reset-otp-email.ejs");
+     const templatePath = path.join(
+          __dirname,
+          "templates",
+          "password-reset-otp-email.ejs"
+     );
 
      // Render the EJS template
      const html = await ejs.renderFile(templatePath, { name, otp, otp_expiry });

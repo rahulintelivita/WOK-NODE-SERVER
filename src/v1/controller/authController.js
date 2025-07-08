@@ -63,5 +63,14 @@ export const AuthController = {
                data: profile,
                message: MESSAGE.PROFILE_FETCHED
           });
+     },
+     async updateProfile(req, res) {
+          await AuthService.updateProfile({
+               userId: req.user.id,
+               ...req.body
+          });
+          return ResponseHandler.success(res, {
+               message: MESSAGE.PROFILE_UPDATED
+          });
      }
 };

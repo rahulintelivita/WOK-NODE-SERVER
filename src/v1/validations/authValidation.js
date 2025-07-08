@@ -8,35 +8,40 @@ export const signupSchema = Joi.object({
 });
 
 export const verifyOtpSchema = Joi.object({
-    email: Joi.string().email().required(),
-    otp: Joi.string().required()
+     email: Joi.string().email().required(),
+     otp: Joi.string().required()
 });
 
 export const loginSchema = Joi.object({
-    email: Joi.string().email().required(),
-    password: Joi.string().required()
+     email: Joi.string().email().required(),
+     password: Joi.string().required()
 });
 
 export const resendOtpSchema = Joi.object({
-    email: Joi.string().email().required()
+     email: Joi.string().email().required()
 });
 
 export const forgotPasswordSchema = Joi.object({
-    email: Joi.string().email().required()
+     email: Joi.string().email().required()
 });
 
 export const verifyResetOtpSchema = Joi.object({
-    email: Joi.string().email().required(),
-    otp: Joi.string().required()
+     email: Joi.string().email().required(),
+     otp: Joi.string().required()
 });
 
 export const resetPasswordSchema = Joi.object({
-    email: Joi.string().email().required(),
-    otp: Joi.string().required(),
-    new_password: Joi.string().min(6).max(255).required()
+     email: Joi.string().email().required(),
+     otp: Joi.string().required(),
+     new_password: Joi.string().min(6).max(255).required()
 });
 
 export const changePasswordSchema = Joi.object({
-    current_password: Joi.string().required(),
-    new_password: Joi.string().min(6).max(255).required()
+     current_password: Joi.string().required(),
+     new_password: Joi.string().min(6).max(255).required()
 });
+
+export const updateProfileSchema = Joi.object({
+     full_name: Joi.string().max(255),
+     profile_url: Joi.string()
+})
