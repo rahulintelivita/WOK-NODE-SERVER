@@ -14,5 +14,18 @@ export const AuthController = {
           return ResponseHandler.success(res, {
                message: MESSAGE.OTP_VERIFIED
           });
+     },
+     async login(req, res) {
+          const result = await AuthService.login(req.body);
+          return ResponseHandler.success(res, {
+               data: result,
+               message: "Login successful"
+          });
+     },
+     async resendOtp(req, res) {
+          await AuthService.resendOtp(req.body);
+          return ResponseHandler.success(res, {
+               message: MESSAGE.RESEND_OTP_SUCCESS
+          });
      }
 };

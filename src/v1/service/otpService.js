@@ -1,3 +1,4 @@
+import moment from "moment";
 import { prisma } from "../config/db.js";
 import { env } from "../config/env.config.js";
 import { randomBytes } from "crypto";
@@ -27,7 +28,8 @@ export const OtpService = {
                     user_id: userId,
                     otp,
                     type,
-                    expires_at: expiresAt
+                    expires_at: expiresAt,
+                    created_at: moment().unix()
                }
           });
           return createdOtp;
@@ -48,7 +50,7 @@ export const OtpService = {
           if (!foundOtp) return false;
           await prisma.otp.update({
                where: { id: foundOtp.id },
-               data: { verified: true }
+               data: { verified: true, deleted_at: moment().unix() }
           });
           return true;
      },
@@ -60,7 +62,7 @@ export const OtpService = {
                     type,
                     verified: false
                },
-               data: { verified: true }
+               data: { verified: true, deleted_at: moment().unix() }
           });
      }
 };

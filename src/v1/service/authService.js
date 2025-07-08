@@ -1,10 +1,10 @@
 import bcrypt from "bcryptjs";
 import { HTTP_STATUS_CODES, MESSAGE } from "../common/constants.js";
-import { ResponseHandler } from "../common/responseHendler.js";
 import { prisma } from "../config/db.js";
 import { env } from "../config/env.config.js";
 import { sendOtpEmail } from "../common/email.js";
 import { OtpService } from "./otpService.js";
+import { TokenService } from "./tokenService.js";
 import moment from "moment";
 
 export const AuthService = {
@@ -24,7 +24,7 @@ export const AuthService = {
                               type: 1, //  email_verification
                               verified: false
                          },
-                         data: { verified: true }
+                         data: { verified: true, deleted_at: moment().unix() }
                     });
                     // Generate new OTP
                     const otpRecord = await OtpService.generateOtp({
@@ -55,7 +55,8 @@ export const AuthService = {
                     full_name,
                     email,
                     password: hashedPassword,
-                    profile_url
+                    profile_url,
+                    created_at: moment().unix()
                }
           });
           // Generate OTP and send email
@@ -64,7 +65,7 @@ export const AuthService = {
                type: 1
           });
           await sendOtpEmail({
-               to: email,
+               to: email,     
                name: full_name,
                otp: otpRecord.otp,
                otp_expiry: env.OTP_EXPIRES_MINUTES
@@ -101,6 +102,69 @@ export const AuthService = {
         await prisma.user.update({
             where: { id: user.id },
             data: { status: 1 }
+        });
+    },
+
+    async login({ email, password }) {
+        const user = await prisma.user.findUnique({ where: { email } });
+        if (!user) {
+            const error = new Error(MESSAGE.RECORD_NOT_FOUND("User"));
+            error.statusCode = HTTP_STATUS_CODES.NOT_FOUND;
+            throw error;
+        }
+        if (user.status !== 1) {
+            const error = new Error("User is not verified. Please verify your email first.");
+            error.statusCode = HTTP_STATUS_CODES.UNAUTHORIZED;
+            throw error;
+        }
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            const error = new Error("Invalid email or password");
+            error.statusCode = HTTP_STATUS_CODES.UNAUTHORIZED;
+            throw error;
+        }
+        // Create and return token
+        const tokenRecord = await TokenService.createToken({ userId: user.id });
+        return {
+            user: {
+                id: user.id,
+                full_name: user.full_name,
+                email: user.email,
+                profile_url: user.profile_url,
+                status: user.status,
+                access_token: tokenRecord.access_token
+            }
+        };
+    },
+
+    async resendOtp({ email }) {
+        const user = await prisma.user.findUnique({ where: { email } });
+        if (!user) {
+            const error = new Error(MESSAGE.RECORD_NOT_FOUND("User"));
+            error.statusCode = HTTP_STATUS_CODES.NOT_FOUND;
+            throw error;
+        }
+        if (user.status === 1) {
+            const error = new Error(MESSAGE.USER_IS_ALREADY_VERIFIED);
+            error.statusCode = HTTP_STATUS_CODES.BAD_REQUEST;
+            throw error;
+        }
+        // Invalidate previous OTPs
+        await prisma.otp.updateMany({
+            where: { user_id: user.id, type: 1, verified: false },
+            data: { verified: true }
+        });
+        // Generate new OTP
+        const otpRecord = await OtpService.generateOtp({
+            userId: user.id,
+            type: 1
+        });
+        // Send OTP email
+        await sendOtpEmail({
+            to: email,
+            name: user.full_name,
+            otp: otpRecord.otp,
+            otp_expiry: env.OTP_EXPIRES_MINUTES
         });
     }
 };
