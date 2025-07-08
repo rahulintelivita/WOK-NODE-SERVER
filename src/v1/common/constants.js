@@ -15,7 +15,10 @@ export const MESSAGE = {
      INVALID_OTP: "Invalid or expired OTP",
      EMAIL_SENT_SUCCESS: "Email sent successfully!",
      USER_IS_ALREADY_VERIFIED: "User is already verified",
-     RESEND_OTP_SUCCESS: "OTP resent to your email"
+     RESEND_OTP_SUCCESS: "OTP resent to your email",
+     PASSWORD_RESET_SUCCESS: "Password reset successfully!",
+     FORGOT_PASSWORD_SUCCESS: "If this email exists, an OTP has been sent"
+
 };
 
 export const ERROR = {

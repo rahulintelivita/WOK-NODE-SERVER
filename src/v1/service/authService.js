@@ -2,7 +2,7 @@ import bcrypt from "bcryptjs";
 import { HTTP_STATUS_CODES, MESSAGE } from "../common/constants.js";
 import { prisma } from "../config/db.js";
 import { env } from "../config/env.config.js";
-import { sendOtpEmail } from "../common/email.js";
+import { sendOtpEmail, sendPasswordResetOtpEmail } from "../common/email.js";
 import { OtpService } from "./otpService.js";
 import { TokenService } from "./tokenService.js";
 import moment from "moment";
@@ -166,5 +166,91 @@ export const AuthService = {
             otp: otpRecord.otp,
             otp_expiry: env.OTP_EXPIRES_MINUTES
         });
+    },
+
+    async forgotPassword({ email }) {
+        // Always respond with success for security
+        const user = await prisma.user.findUnique({ where: { email } });
+        if (user && user.status === 1) {
+            // Invalidate previous password reset OTPs
+            await prisma.otp.updateMany({
+                where: { user_id: user.id, type: 2, verified: false },
+                data: { verified: true, deleted_at: moment().unix() }
+            });
+            // Generate new OTP
+            const otpRecord = await OtpService.generateOtp({
+                userId: user.id,
+                type: 2 // password_reset
+            });
+            // Send password reset OTP email
+            await sendPasswordResetOtpEmail({
+                to: email,
+                name: user.full_name,
+                otp: otpRecord.otp,
+                otp_expiry: env.OTP_EXPIRES_MINUTES
+            });
+        }
+        // Always respond with success
+        return { verified: true };
+    },
+
+    async verifyResetOtp({ email, otp }) {
+        const user = await prisma.user.findUnique({ where: { email } });
+        if (!user) {
+            const error = new Error(MESSAGE.RECORD_NOT_FOUND("User"));
+            error.statusCode = HTTP_STATUS_CODES.NOT_FOUND;
+            throw error;
+        }
+        const otpRecord = await prisma.otp.findFirst({
+            where: {
+                user_id: user.id,
+                otp,
+                type: 2,
+                verified: false,
+                expires_at: { gt: new Date() }
+            }
+        });
+        if (!otpRecord) {
+            const error = new Error(MESSAGE.INVALID_OTP);
+            error.statusCode = HTTP_STATUS_CODES.BAD_REQUEST;
+            throw error;
+        }
+        // Mark OTP as verified
+        await prisma.otp.update({
+            where: { id: otpRecord.id },
+            data: { verified: true }
+        });
+        return { verified: true };
+    },
+
+    async resetPassword({ email, otp, new_password }) {
+        const user = await prisma.user.findUnique({ where: { email } });
+        if (!user) {
+            const error = new Error(MESSAGE.RECORD_NOT_FOUND("User"));
+            error.statusCode = HTTP_STATUS_CODES.NOT_FOUND;
+            throw error;
+        }
+        const otpRecord = await prisma.otp.findFirst({
+            where: {
+                user_id: user.id,
+                otp,
+                type: 2,
+                verified: true,
+                expires_at: { gt: new Date() }
+            }
+        });
+        if (!otpRecord) {
+            const error = new Error(MESSAGE.INVALID_OTP);
+            error.statusCode = HTTP_STATUS_CODES.BAD_REQUEST;
+            throw error;
+        }
+        // Update password
+        const salt = await bcrypt.genSalt(Number(env.BCRYPT_SALT_ROUND));
+        const hashedPassword = await bcrypt.hash(new_password, salt);
+        await prisma.user.update({
+            where: { id: user.id },
+            data: { password: hashedPassword }
+        });
+        return;
     }
 };

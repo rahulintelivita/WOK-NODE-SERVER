@@ -27,5 +27,24 @@ export const AuthController = {
           return ResponseHandler.success(res, {
                message: MESSAGE.RESEND_OTP_SUCCESS
           });
+     },
+     async forgotPassword(req, res) {
+          await AuthService.forgotPassword(req.body);
+          return ResponseHandler.success(res, {
+               message: MESSAGE.FORGOT_PASSWORD_SUCCESS
+          });
+     },
+     async verifyResetOtp(req, res) {
+         const result = await AuthService.verifyResetOtp(req.body);
+          return ResponseHandler.success(res, {
+               message: MESSAGE.OTP_VERIFIED,
+               data: result
+          });
+     },
+     async resetPassword(req, res) {
+          await AuthService.resetPassword(req.body);
+          return ResponseHandler.success(res, {
+               message: MESSAGE.PASSWORD_RESET_SUCCESS
+          });
      }
 };
