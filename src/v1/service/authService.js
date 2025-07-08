@@ -273,5 +273,22 @@ export const AuthService = {
             data: { password: hashedPassword }
         });
         return;
+    },
+
+    async getProfile({ userId }) {
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: {
+                full_name: true,
+                email: true,
+                profile_url: true
+            }
+        });
+        if (!user) {
+            const error = new Error(MESSAGE.RECORD_NOT_FOUND("User"));
+            error.statusCode = HTTP_STATUS_CODES.NOT_FOUND;
+            throw error;
+        }
+        return user;
     }
 };

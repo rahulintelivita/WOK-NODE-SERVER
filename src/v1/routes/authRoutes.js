@@ -13,5 +13,6 @@ router.post("/forgot-password", validate(forgotPasswordSchema), AuthController.f
 router.post("/verify-reset-otp", validate(verifyResetOtpSchema), AuthController.verifyResetOtp);
 router.post("/reset-password", validate(resetPasswordSchema), AuthController.resetPassword);
 router.post("/change-password", authMiddleware, validate(changePasswordSchema), AuthController.changePassword);
+router.get("/profile", authMiddleware, AuthController.getProfile);
 
 export default router;

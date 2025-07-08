@@ -48,7 +48,6 @@ export const AuthController = {
                message: MESSAGE.PASSWORD_RESET_SUCCESS
           });
      },
-
      async changePassword(req, res) {
           await AuthService.changePassword({
                userId: req.user.id,
@@ -56,6 +55,13 @@ export const AuthController = {
           });
           return ResponseHandler.success(res, {
                message: "Password changed successfully"
+          });
+     },
+     async getProfile(req, res) {
+          const profile = await AuthService.getProfile({ userId: req.user.id });
+          return ResponseHandler.success(res, {
+               data: profile,
+               message: MESSAGE.PROFILE_FETCHED
           });
      }
 };
