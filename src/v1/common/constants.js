@@ -10,6 +10,7 @@ export const MESSAGE = {
      ALREADY_EXISTS: record =>
           `A ${record} with the same details already exists.`,
      SIGNUP_SUCCESS: "Signup successful",
+     EMAIL_OTP_SENT: "Email OTP sent successfully!",
      EMAIL_SENT_SUCCESS: "Email sent successfully!"
 };
 
