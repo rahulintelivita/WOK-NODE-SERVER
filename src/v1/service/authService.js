@@ -49,10 +49,7 @@ export const AuthService = {
                          errors: { email: emailResult.message }
                     });
                }
-
-               return user;
           } catch (error) {
-               // Re-throw the error to be caught by global error handler
                throw error;
           }
      }
