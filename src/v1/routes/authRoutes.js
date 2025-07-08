@@ -10,7 +10,9 @@ import {
      verifyResetOtpSchema,
      resetPasswordSchema,
      changePasswordSchema,
-     updateProfileSchema
+     updateProfileSchema,
+     deleteAccountOtpSchema,
+     deleteAccountSchema
 } from "../validations/authValidation.js";
 import { authMiddleware } from "../middlewares/auth.js";
 const router = express.Router();
@@ -46,6 +48,18 @@ router.patch(
      authMiddleware,
      validate(updateProfileSchema),
      AuthController.updateProfile
+);
+router.post(
+     "/delete-account/send-otp",
+     authMiddleware,
+     validate(deleteAccountOtpSchema),
+     AuthController.sendDeleteAccountOtp
+);
+router.post(
+     "/delete-account",
+     authMiddleware,
+     validate(deleteAccountSchema),
+     AuthController.deleteAccount
 );
 
 export default router;

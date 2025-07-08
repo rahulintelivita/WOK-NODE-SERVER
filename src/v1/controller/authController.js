@@ -72,5 +72,17 @@ export const AuthController = {
           return ResponseHandler.success(res, {
                message: MESSAGE.PROFILE_UPDATED
           });
+     },
+     async sendDeleteAccountOtp(req, res) {
+          await AuthService.sendDeleteAccountOtp({ userId: req.user.id });
+          return ResponseHandler.success(res, {
+               message: MESSAGE.DELETE_ACCOUNT_OTP_SENT
+          });
+     },
+     async deleteAccount(req, res) {
+          await AuthService.deleteAccount({ userId: req.user.id, ...req.body });
+          return ResponseHandler.success(res, {
+               message: MESSAGE.ACCOUNT_DELETED
+          });
      }
 };

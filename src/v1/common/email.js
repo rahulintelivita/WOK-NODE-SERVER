@@ -102,3 +102,29 @@ export async function sendPasswordResetOtpEmail({ to, name, otp, otp_expiry }) {
           html
      });
 }
+
+/**
+ * function to send a delete account OTP email using an EJS template.
+ * @param {Object} params
+ * @param {string} params.to - Recipient email address
+ * @param {string} params.name - Recipient name
+ * @param {string} params.otp - OTP code
+ * @param {number|string} params.otp_expiry - OTP expiry in minutes
+ * @returns {Promise<Object>} - Result of the email sending
+ */
+export async function sendDeleteAccountOtpEmail({ to, name, otp, otp_expiry }) {
+     const __filename = fileURLToPath(import.meta.url);
+     const __dirname = path.dirname(__filename);
+     const templatePath = path.join(__dirname, "templates", "delete-account-otp-email.ejs");
+
+     // Render the EJS template
+     const html = await ejs.renderFile(templatePath, { name, otp, otp_expiry });
+
+     // Send the email
+     return sendMail({
+          to,
+          subject: "Your Account Deletion OTP",
+          text: `Hello ${name},\nYour account deletion OTP is: ${otp}. It will expire in ${otp_expiry} minutes.`,
+          html
+     });
+}

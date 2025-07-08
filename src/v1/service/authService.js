@@ -2,7 +2,7 @@ import bcrypt from "bcryptjs";
 import { HTTP_STATUS_CODES, MESSAGE } from "../common/constants.js";
 import { prisma } from "../config/db.js";
 import { env } from "../config/env.config.js";
-import { sendOtpEmail, sendPasswordResetOtpEmail } from "../common/email.js";
+import { sendOtpEmail, sendPasswordResetOtpEmail, sendDeleteAccountOtpEmail } from "../common/email.js";
 import { OtpService } from "./otpService.js";
 import { TokenService } from "./tokenService.js";
 import moment from "moment";
@@ -309,5 +309,64 @@ export const AuthService = {
                email: user.email,
                profile_url: user.profile_url
           };
+     },
+
+     async sendDeleteAccountOtp({ userId }) {
+         const user = await prisma.user.findUnique({ where: { id: userId } });
+         if (!user) {
+             const error = new Error(MESSAGE.RECORD_NOT_FOUND("User"));
+             error.statusCode = HTTP_STATUS_CODES.NOT_FOUND;
+             throw error;
+         }
+         // Invalidate previous delete account OTPs
+         await prisma.otp.updateMany({
+             where: { user_id: user.id, type: 3, verified: false },
+             data: { verified: true, deleted_at: moment().unix() }
+         });
+         // Generate new OTP
+         const otpRecord = await OtpService.generateOtp({
+             userId: user.id,
+             type: 3 // delete_account
+         });
+         // Send delete account OTP email
+         await sendDeleteAccountOtpEmail({
+             to: user.email,
+             name: user.full_name,
+             otp: otpRecord.otp,
+             otp_expiry: env.OTP_EXPIRES_MINUTES
+         });
+     },
+
+     async deleteAccount({ userId, otp }) {
+         const user = await prisma.user.findUnique({ where: { id: userId } });
+         if (!user) {
+             const error = new Error(MESSAGE.RECORD_NOT_FOUND("User"));
+             error.statusCode = HTTP_STATUS_CODES.NOT_FOUND;
+             throw error;
+         }
+         const otpRecord = await prisma.otp.findFirst({
+             where: {
+                 user_id: user.id,
+                 otp,
+                 type: 3,
+                 verified: false,
+                 expires_at: { gt: new Date() }
+             }
+         });
+         if (!otpRecord) {
+             const error = new Error(MESSAGE.INVALID_OTP);
+             error.statusCode = HTTP_STATUS_CODES.BAD_REQUEST;
+             throw error;
+         }
+         // Mark OTP as verified
+         await prisma.otp.update({
+             where: { id: otpRecord.id },
+             data: { verified: true }
+         });
+         // Soft delete the user
+         await prisma.user.update({
+             where: { id: userId },
+             data: { deleted_at: moment().unix() }
+         });
      }
 };

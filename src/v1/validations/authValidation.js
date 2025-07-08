@@ -45,3 +45,9 @@ export const updateProfileSchema = Joi.object({
      full_name: Joi.string().max(255),
      profile_url: Joi.string()
 })
+
+export const deleteAccountOtpSchema = Joi.object({});
+
+export const deleteAccountSchema = Joi.object({
+    otp: Joi.string().required()
+});
