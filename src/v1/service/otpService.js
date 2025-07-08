@@ -1,8 +1,6 @@
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../config/db.js";
 import { env } from "../config/env.config.js";
 import { randomBytes } from "crypto";
-
-const prisma = new PrismaClient();
 
 const OTP_LENGTH = parseInt(env.OTP_LENGTH) || 6;
 const OTP_EXPIRES_MINUTES = parseInt(env.OTP_EXPIRES_MINUTES) || 10;

@@ -1,8 +1,7 @@
-import { PrismaClient } from "@prisma/client";
 import moment from "moment";
 import jwt from "jsonwebtoken";
 import { env } from "../config/env.config.js";
-const prisma = new PrismaClient();
+import { prisma } from "../config/db.js";
 
 export const TokenService = {
      async createToken({
@@ -24,7 +23,9 @@ export const TokenService = {
           const jwtOptions = { expiresIn: env.JWT_EXPIRES_IN };
           const accessToken = jwt.sign(jwtPayload, env.JWT_SECRET, jwtOptions);
           // Set expiresAt if not provided
-          const tokenExpiresAt = expiresAt || moment().add(moment.duration(env.JWT_EXPIRES_IN)).toDate();
+          const tokenExpiresAt =
+               expiresAt ||
+               moment().add(moment.duration(env.JWT_EXPIRES_IN)).toDate();
           // Create new token
           return prisma.token.create({
                data: {
