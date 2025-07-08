@@ -12,7 +12,8 @@ export const AuthController = {
      async verifyOtp(req, res) {
           const result = await AuthService.verifyOtp(req.body);
           return ResponseHandler.success(res, {
-               message: MESSAGE.OTP_VERIFIED
+               message: MESSAGE.OTP_VERIFIED,
+               data: result
           });
      },
      async login(req, res) {
@@ -35,7 +36,7 @@ export const AuthController = {
           });
      },
      async verifyResetOtp(req, res) {
-         const result = await AuthService.verifyResetOtp(req.body);
+          const result = await AuthService.verifyResetOtp(req.body);
           return ResponseHandler.success(res, {
                message: MESSAGE.OTP_VERIFIED,
                data: result
@@ -45,6 +46,16 @@ export const AuthController = {
           await AuthService.resetPassword(req.body);
           return ResponseHandler.success(res, {
                message: MESSAGE.PASSWORD_RESET_SUCCESS
+          });
+     },
+
+     async changePassword(req, res) {
+          await AuthService.changePassword({
+               userId: req.user.id,
+               ...req.body
+          });
+          return ResponseHandler.success(res, {
+               message: "Password changed successfully"
           });
      }
 };

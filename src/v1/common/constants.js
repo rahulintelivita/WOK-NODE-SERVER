@@ -17,7 +17,9 @@ export const MESSAGE = {
      USER_IS_ALREADY_VERIFIED: "User is already verified",
      RESEND_OTP_SUCCESS: "OTP resent to your email",
      PASSWORD_RESET_SUCCESS: "Password reset successfully!",
-     FORGOT_PASSWORD_SUCCESS: "If this email exists, an OTP has been sent"
+     FORGOT_PASSWORD_SUCCESS: "If this email exists, an OTP has been sent",
+     UNAUTHORIZED: "Unauthorized",
+     INVALID_TOKEN: "Invalid token or expired"
 
 };
 

@@ -251,5 +251,27 @@ export const AuthService = {
             data: { password: hashedPassword }
         });
         return;
+    },
+
+    async changePassword({ userId, current_password, new_password }) {
+        const user = await prisma.user.findUnique({ where: { id: userId } });
+        if (!user) {
+            const error = new Error(MESSAGE.RECORD_NOT_FOUND("User"));
+            error.statusCode = HTTP_STATUS_CODES.NOT_FOUND;
+            throw error;
+        }
+        const isMatch = await bcrypt.compare(current_password, user.password);
+        if (!isMatch) {
+            const error = new Error("Current password is incorrect");
+            error.statusCode = HTTP_STATUS_CODES.UNAUTHORIZED;
+            throw error;
+        }
+        const salt = await bcrypt.genSalt(Number(env.BCRYPT_SALT_ROUND));
+        const hashedPassword = await bcrypt.hash(new_password, salt);
+        await prisma.user.update({
+            where: { id: userId },
+            data: { password: hashedPassword }
+        });
+        return;
     }
 };

@@ -19,7 +19,7 @@ export const TokenService = {
                data: { deleted_at: moment().unix() }
           });
           // Generate JWT access token
-          const jwtPayload = { userId, provider, ...payload };
+          const jwtPayload = { id: userId, provider, ...payload };
           const jwtOptions = { expiresIn: env.JWT_EXPIRES_IN };
           const accessToken = jwt.sign(jwtPayload, env.JWT_SECRET, jwtOptions);
           // Set expiresAt if not provided
