@@ -35,20 +35,12 @@ export const AuthService = {
                     type: 1
                }); // 1 = email_verification
 
-               const emailResult = await sendOtpEmail({
+               await sendOtpEmail({
                     to: email,
                     name: full_name,
                     otp: otpRecord.otp,
                     otp_expiry: env.OTP_EXPIRES_MINUTES
                });
-
-               // Check if email sending failed
-               if (emailResult.success === 0) {
-                    return ResponseHandler.error(res, {
-                         message: "User created but failed to send OTP email",
-                         errors: { email: emailResult.message }
-                    });
-               }
           } catch (error) {
                throw error;
           }
