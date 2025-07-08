@@ -36,5 +36,6 @@ export const HTTP_STATUS_CODES = {
 };
 
 export const EMAIL_SUBJECTS = {
-     OTP: "Your OTP Code"
+     OTP: "Your OTP Code",
+     PASSWORD_RESET_OTP: "Your Password Reset OTP"
 };

@@ -93,7 +93,7 @@ export async function sendPasswordResetOtpEmail({ to, name, otp, otp_expiry }) {
      // Send the email
      return sendMail({
           to,
-          subject: "Your Password Reset OTP",
+          subject: EMAIL_SUBJECTS.PASSWORD_RESET_OTP,
           text: `Hello ${name},\nYour password reset OTP is: ${otp}. It will expire in ${otp_expiry} minutes.`,
           html
      });

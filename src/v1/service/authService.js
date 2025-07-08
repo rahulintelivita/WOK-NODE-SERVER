@@ -190,8 +190,7 @@ export const AuthService = {
                 otp_expiry: env.OTP_EXPIRES_MINUTES
             });
         }
-        // Always respond with success
-        return { verified: true };
+        return 
     },
 
     async verifyResetOtp({ email, otp }) {
